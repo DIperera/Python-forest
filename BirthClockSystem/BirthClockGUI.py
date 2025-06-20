@@ -1,9 +1,11 @@
-# Importing required modules
+# main.py
+
 import datetime  # Built-in module for handling dates and times
 import tkinter as tk  # Basic GUI module
 from tkinter import messagebox  # For showing pop-up messages
 from tkinter import ttk  # Themed widgets like buttons, labels, etc.
 from ttkthemes import ThemedTk  # Allows the use of modern themes for the GUI
+from theme_manager import toggle_theme, get_current_theme, THEMES  # Import theme toggle functions
 
 # ----------- Utility function to center windows -----------
 def center_window(window, width=500, height=420):
@@ -112,38 +114,44 @@ def create_calculator():
         messagebox.showerror("Input Error", "Enter a valid birth date!")
         return None
 
+def apply_window_bg(window):
+    # Set background for new window according to theme
+    if get_current_theme() == "light":
+        window.configure(background="white")
+    else:
+        window.configure(background="#2b2b2b")
+
 def open_lived_time():
-    # Show window with time lived
     calc = create_calculator()
     if calc:
         win = tk.Toplevel(root)
         win.title("Lived Time")
-        center_window(win) #call the center_window function
+        center_window(win)
+        apply_window_bg(win)
         ttk.Label(win, text=calc.calculate_lived_time(), justify="left", padding=10, wraplength=420).pack(fill="both", expand=True)
         ttk.Button(win, text="Back to Home", command=win.destroy).pack(pady=10)
 
 def open_next_birthday():
-    # Show window with days until next birthday
     calc = create_calculator()
     if calc:
         win = tk.Toplevel(root)
         win.title("Next Birthday")
-        center_window(win) #call the center_window function
+        center_window(win)
+        apply_window_bg(win)
         ttk.Label(win, text=calc.days_until_next_birthday(), justify="left", padding=10, wraplength=420).pack(fill="both", expand=True)
         ttk.Button(win, text="Back to Home", command=win.destroy).pack(pady=10)
 
 def open_specific_date():
-    # Show input form and result for specific future date countdown
     calc = create_calculator()
     if calc:
         win = tk.Toplevel(root)
         win.title("Countdown to Specific Date")
-        center_window(win) #call the center_window function
+        center_window(win)
+        apply_window_bg(win)
         ttk.Label(win, text="Enter target date below:").pack(pady=5)
         frm = ttk.Frame(win)
         frm.pack()
 
-        # Input fields for year, month, day
         ttk.Label(frm, text="Year:").grid(row=0, column=0)
         year_entry = ttk.Entry(frm, width=5)
         year_entry.grid(row=0, column=1, padx=5)
@@ -156,11 +164,9 @@ def open_specific_date():
         day_entry = ttk.Entry(frm, width=3)
         day_entry.grid(row=0, column=5, padx=5)
 
-        # Area to show result
         result_text = tk.StringVar()
         ttk.Label(win, textvariable=result_text, wraplength=400, padding=10, justify="left").pack(pady=5, fill="both", expand=True)
 
-        # Button to trigger calculation
         def calculate_specific():
             try:
                 y = int(year_entry.get())
@@ -176,10 +182,16 @@ def open_specific_date():
 # ----------- MAIN GUI SETUP -----------
 
 # Create main window with theme
-root = ThemedTk(theme="plastik")  # You can change to "arc", "breeze", etc.
+root = ThemedTk(theme=THEMES[get_current_theme()])
 root.title("Age Calculator - By Ishira Perera")
-root.geometry("500x420")  # Window size
-center_window(root) #call the center_window function
+root.geometry("500x420")
+center_window(root)
+
+# Set initial background for root according to theme:
+if get_current_theme() == "light":
+    root.configure(background="white")
+else:
+    root.configure(background="#2b2b2b")
 
 # Set default font and spacing
 style = ttk.Style()
@@ -214,6 +226,7 @@ ttk.Label(root, text="Choose an option:", font=("Segoe UI", 12)).pack(pady=10)
 ttk.Button(root, text="🧮 Show Lived Time", command=open_lived_time).pack(pady=5)
 ttk.Button(root, text="🎉 Days Until Next Birthday", command=open_next_birthday).pack(pady=5)
 ttk.Button(root, text="📅 Time Until Specific Date", command=open_specific_date).pack(pady=5)
+ttk.Button(root, text="🌓 Toggle Light/Dark Theme", command=lambda: toggle_theme(root)).pack(pady=10)
 
 # Start the GUI event loop
 root.mainloop()
