@@ -1,24 +1,31 @@
-import datetime
-import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
-from ttkthemes import ThemedTk
+# Importing required modules
+import datetime  # Built-in module for handling dates and times
+import tkinter as tk  # Basic GUI module
+from tkinter import messagebox  # For showing pop-up messages
+from tkinter import ttk  # Themed widgets like buttons, labels, etc.
+from ttkthemes import ThemedTk  # Allows the use of modern themes for the GUI
 
-
+# ----------- AgeCalculator Class Definition -----------
 class AgeCalculator:
     def __init__(self, year, month, day):
+        # Store the birth date
         self.birth_date = datetime.datetime(year, month, day)
+        # Get the current date and time
         self.now = datetime.datetime.now()
 
     def calculate_lived_time(self):
+        # Calculate the difference between current time and birth date
         age_diff = self.now - self.birth_date
         total_seconds = int(age_diff.total_seconds())
+
+        # Extract years, days, hours, minutes, seconds
         years = age_diff.days // 365
         days = age_diff.days % 365
         hours = age_diff.seconds // 3600
         minutes = (age_diff.seconds % 3600) // 60
         seconds = age_diff.seconds % 60
 
+        # Return a formatted string of the lived time
         return (
             f"--- Your Lived Time ---\n"
             f"Years: {years}\n"
@@ -29,16 +36,19 @@ class AgeCalculator:
         )
 
     def days_until_next_birthday(self):
+        # Calculate how many days until the next birthday
         today = self.now.date()
         current_year = today.year
         birth_month = self.birth_date.month
         birth_day = self.birth_date.day
 
+        # Handle leap years (e.g., Feb 29)
         try:
             next_birthday = datetime.date(current_year, birth_month, birth_day)
         except ValueError:
-            next_birthday = datetime.date(current_year, 3, 1)
+            next_birthday = datetime.date(current_year, 3, 1)  # fallback to March 1
 
+        # If birthday has passed this year, calculate for next year
         if next_birthday <= today:
             try:
                 next_birthday = datetime.date(current_year + 1, birth_month, birth_day)
@@ -50,6 +60,7 @@ class AgeCalculator:
         approx_months = days // 30.5
         remaining_days = days % 30.5
 
+        # Return a formatted string
         return (
             f"--- Time Until Your Next Birthday ({next_birthday}) ---\n"
             f"Approx. Months: {int(approx_months)}, Days: {int(remaining_days)}\n"
@@ -57,11 +68,13 @@ class AgeCalculator:
         )
 
     def time_until_specific_date(self, year, month, day):
+        # Calculate time left until a custom future date
         try:
             target_date = datetime.datetime(year, month, day)
         except ValueError:
             return "Invalid date entered."
 
+        # If the date is in the past, show error
         if target_date < self.now:
             return "The specified date is in the past!"
 
@@ -76,10 +89,10 @@ class AgeCalculator:
             f"Days: {days}, Hours: {hours}, Minutes: {minutes}, Seconds: {seconds}"
         )
 
-
-# ---------- GUI Functions ----------
+# ----------- GUI Functions -----------
 
 def create_calculator():
+    # Read birth date input and return an AgeCalculator instance
     try:
         year = int(entry_year.get())
         month = int(entry_month.get())
@@ -89,8 +102,8 @@ def create_calculator():
         messagebox.showerror("Input Error", "Enter a valid birth date!")
         return None
 
-
 def open_lived_time():
+    # Show window with time lived
     calc = create_calculator()
     if calc:
         win = tk.Toplevel(root)
@@ -98,8 +111,8 @@ def open_lived_time():
         ttk.Label(win, text=calc.calculate_lived_time(), justify="left", padding=10, wraplength=420).pack(fill="both", expand=True)
         ttk.Button(win, text="Back to Home", command=win.destroy).pack(pady=10)
 
-
 def open_next_birthday():
+    # Show window with days until next birthday
     calc = create_calculator()
     if calc:
         win = tk.Toplevel(root)
@@ -107,8 +120,8 @@ def open_next_birthday():
         ttk.Label(win, text=calc.days_until_next_birthday(), justify="left", padding=10, wraplength=420).pack(fill="both", expand=True)
         ttk.Button(win, text="Back to Home", command=win.destroy).pack(pady=10)
 
-
 def open_specific_date():
+    # Show input form and result for specific future date countdown
     calc = create_calculator()
     if calc:
         win = tk.Toplevel(root)
@@ -118,6 +131,7 @@ def open_specific_date():
         frm = ttk.Frame(win)
         frm.pack()
 
+        # Input fields for year, month, day
         ttk.Label(frm, text="Year:").grid(row=0, column=0)
         year_entry = ttk.Entry(frm, width=5)
         year_entry.grid(row=0, column=1, padx=5)
@@ -130,9 +144,11 @@ def open_specific_date():
         day_entry = ttk.Entry(frm, width=3)
         day_entry.grid(row=0, column=5, padx=5)
 
+        # Area to show result
         result_text = tk.StringVar()
         ttk.Label(win, textvariable=result_text, wraplength=400, padding=10, justify="left").pack(pady=5, fill="both", expand=True)
 
+        # Button to trigger calculation
         def calculate_specific():
             try:
                 y = int(year_entry.get())
@@ -145,38 +161,46 @@ def open_specific_date():
         ttk.Button(win, text="Calculate", command=calculate_specific).pack(pady=5)
         ttk.Button(win, text="Back to Home", command=win.destroy).pack(pady=5)
 
+# ----------- MAIN GUI SETUP -----------
 
-# ---------- MAIN GUI ----------
-
-root = ThemedTk(theme="arc")  # Try "equilux", "plastik", "breeze", etc.
+# Create main window with theme
+root = ThemedTk(theme="arc")  # You can change to "plastik", "breeze", etc.
 root.title("Age Calculator - Home")
-root.geometry("500x420")
+root.geometry("500x420")  # Window size
 
-# Global font and style
+# Set default font and spacing
 style = ttk.Style()
 style.configure("TLabel", font=("Segoe UI", 11))
 style.configure("TButton", font=("Segoe UI", 10), padding=6)
 style.configure("TEntry", padding=5)
 
+# Title label
 ttk.Label(root, text="Enter Your Birth Date", font=("Segoe UI", 13, "bold")).pack(pady=10)
+
+# Frame for date inputs
 frame = ttk.Frame(root)
 frame.pack()
 
+# Year input
 ttk.Label(frame, text="Year (YYYY):").grid(row=0, column=0, padx=5)
 entry_year = ttk.Entry(frame, width=6)
 entry_year.grid(row=0, column=1, padx=5)
 
+# Month input
 ttk.Label(frame, text="Month (MM):").grid(row=0, column=2, padx=5)
 entry_month = ttk.Entry(frame, width=4)
 entry_month.grid(row=0, column=3, padx=5)
 
+# Day input
 ttk.Label(frame, text="Day (DD):").grid(row=0, column=4, padx=5)
 entry_day = ttk.Entry(frame, width=4)
 entry_day.grid(row=0, column=5, padx=5)
 
+# Buttons for actions
 ttk.Label(root, text="Choose an option:", font=("Segoe UI", 12)).pack(pady=10)
 ttk.Button(root, text="🧮 Show Lived Time", command=open_lived_time).pack(pady=5)
 ttk.Button(root, text="🎉 Days Until Next Birthday", command=open_next_birthday).pack(pady=5)
 ttk.Button(root, text="📅 Time Until Specific Date", command=open_specific_date).pack(pady=5)
 
+# Start the GUI event loop
 root.mainloop()
