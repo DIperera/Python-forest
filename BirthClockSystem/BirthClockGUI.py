@@ -5,6 +5,16 @@ from tkinter import messagebox  # For showing pop-up messages
 from tkinter import ttk  # Themed widgets like buttons, labels, etc.
 from ttkthemes import ThemedTk  # Allows the use of modern themes for the GUI
 
+# ----------- Utility function to center windows -----------
+def center_window(window, width=500, height=420):
+    window.update_idletasks()
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    x = (screen_width // 2) - (width // 2)
+    y = (screen_height // 2) - (height // 2)
+    window.geometry(f"{width}x{height}+{x}+{y}")
+    window.resizable(False, False)
+
 # ----------- AgeCalculator Class Definition -----------
 class AgeCalculator:
     def __init__(self, year, month, day):
@@ -108,6 +118,7 @@ def open_lived_time():
     if calc:
         win = tk.Toplevel(root)
         win.title("Lived Time")
+        center_window(win) #call the center_window function
         ttk.Label(win, text=calc.calculate_lived_time(), justify="left", padding=10, wraplength=420).pack(fill="both", expand=True)
         ttk.Button(win, text="Back to Home", command=win.destroy).pack(pady=10)
 
@@ -117,6 +128,7 @@ def open_next_birthday():
     if calc:
         win = tk.Toplevel(root)
         win.title("Next Birthday")
+        center_window(win) #call the center_window function
         ttk.Label(win, text=calc.days_until_next_birthday(), justify="left", padding=10, wraplength=420).pack(fill="both", expand=True)
         ttk.Button(win, text="Back to Home", command=win.destroy).pack(pady=10)
 
@@ -126,7 +138,7 @@ def open_specific_date():
     if calc:
         win = tk.Toplevel(root)
         win.title("Countdown to Specific Date")
-
+        center_window(win) #call the center_window function
         ttk.Label(win, text="Enter target date below:").pack(pady=5)
         frm = ttk.Frame(win)
         frm.pack()
@@ -164,9 +176,10 @@ def open_specific_date():
 # ----------- MAIN GUI SETUP -----------
 
 # Create main window with theme
-root = ThemedTk(theme="arc")  # You can change to "plastik", "breeze", etc.
-root.title("Age Calculator - Home")
+root = ThemedTk(theme="plastik")  # You can change to "arc", "breeze", etc.
+root.title("Age Calculator - By Ishira Perera")
 root.geometry("500x420")  # Window size
+center_window(root) #call the center_window function
 
 # Set default font and spacing
 style = ttk.Style()
